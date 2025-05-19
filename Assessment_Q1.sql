@@ -2,7 +2,8 @@
 -- Scenario: The business wants to identify customers who have both a savings and an investment plan (cross-selling opportunity).
 -- Task: Write a query to find customers with at least one funded savings plan AND one funded investment plan, sorted by total deposits.
 
-with Funded_savings as (
+with Funded_savings as -- This CTE is to find and count users with a 'funded' savings account. This is vital because from the dataset 1 user can have multiple savings accounts.
+	(
     SELECT
       sa.owner_id as owner_id,
       count(distinct savings_id) as savings_count,
@@ -14,7 +15,8 @@ with Funded_savings as (
 		AND pp.is_regular_savings = 1
     GROUP BY 1),
     
-funded_investment as (
+funded_investment as -- This CTE is to find and count users with a 'funded' investment account. This was dicey because we have 2 columns that allude to investments: is_a_fund and is_fixed_investment.
+	(
     SELECT
       owner_id,
       count(distinct id) as investment_count,
@@ -24,7 +26,7 @@ funded_investment as (
 		AND amount > 0
     GROUP BY 1)
 
-SELECT
+SELECT -- This query sums the total users with at least 1 funded savings or investment account and the total deposits.
   u.id as customer_id,
   trim(concat(first_name,' ',last_name)) as customer_name,
   fs.savings_count as savings_count,
