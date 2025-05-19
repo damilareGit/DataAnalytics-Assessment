@@ -1,4 +1,5 @@
-with total_trx as (
+with total_trx as -- Total Transactions
+	(
 	select 
 		distinct sa.owner_id as user_id,
 		count(*) as total_transactions
@@ -15,10 +16,11 @@ customer_value as (
     where transaction_status = 'success'),
     
 full_table as (
-select u.id as user_id, 
-		trim(concat(first_name,' ',last_name)) as name,
-		round(datediff(curdate(), date(date_joined)) / 30) as tenure_months,
-		t.total_transactions       
+select 
+	u.id as user_id, 
+	trim(concat(first_name,' ',last_name)) as name,
+	round(datediff(curdate(), date(date_joined)) / 30) as tenure_months,
+	t.total_transactions       
 from users_customuser u
 join total_trx t
 	on u.id = t.user_id
@@ -27,7 +29,8 @@ join savings_savingsaccount sa
 group by 1,2,3,4
 order by 4 desc)
 
-select f.user_id as customer_id, f.name, 
+select 
+	f.user_id as customer_id, f.name, 
 	f.tenure_months, f.total_transactions,
 	round((total_transactions/tenure_months) * 12 * avg(cv.profit_per_tx), 2) as estimated_clv
 from full_table f
