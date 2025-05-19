@@ -22,7 +22,7 @@ with transactions_info as (
 		order by 4 desc)
     
     select 
-		frequency_category,
+	frequency_category,
         count(distinct customer_id) as customer_count,
         round(AVG(avg_tx_per_month), 2) as avg_transactions_per_month                
     from transactions_info
